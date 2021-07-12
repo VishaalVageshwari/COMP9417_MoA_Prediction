@@ -1,3 +1,4 @@
+data/lish-moa/
+__pycache__/
 venv/
 .vscode/
-data/lish-moa/
