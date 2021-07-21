@@ -2,3 +2,4 @@ data/lish-moa/
 __pycache__/
 venv/
 .vscode/
+fold_models/*.pth

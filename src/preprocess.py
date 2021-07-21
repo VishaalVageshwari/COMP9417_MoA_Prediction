@@ -10,13 +10,18 @@ def preprocess(df):
 
 
 def prepare_data(dir):
-    train_features = pd.read_csv(f'{dir}/train_features.csv')
-    train_target = pd.read_csv(f'{dir}/train_targets_scored.csv')
-    test_features = pd.read_csv(f'{dir}/test_features.csv')
+    X_train = pd.read_csv(f'{dir}/train_features.csv')
+    Y_train = pd.read_csv(f'{dir}/train_targets_scored.csv')
+    X_test = pd.read_csv(f'{dir}/test_features.csv')
+    ss = pd.read_csv(f'{dir}/sample_submission.csv')
 
-    train_features = preprocess(train_features)
-    test_features = preprocess(test_features)
+    train = X_train.merge(Y_train, on='sig_id')
+    X_train = train.loc[:, X_train.columns]
+    Y_train = train.loc[:, Y_train.columns]
 
-    train_target = train_target.drop('sig_id', axis=1)
+    X_train = preprocess(X_train)
+    X_test = preprocess(X_test)
 
-    return train_features.values, test_features.values, train_target.values
+    Y_train = Y_train.drop('sig_id', axis=1)
+
+    return X_train, Y_train, X_test, ss

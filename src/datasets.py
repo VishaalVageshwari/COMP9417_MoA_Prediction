@@ -3,8 +3,8 @@ import torch
 
 class MoADataset:
     def __init__(self, features, targets):
-        self.features = features
-        self.targets = targets
+        self.features = features.values
+        self.targets = targets.values
         
     def __len__(self):
         return (self.features.shape[0])
@@ -17,7 +17,7 @@ class MoADataset:
 
 class TestMoADataset:
     def __init__(self, features):
-        self.features = features
+        self.features = features.values
         
     def __len__(self):
         return (self.features.shape[0])

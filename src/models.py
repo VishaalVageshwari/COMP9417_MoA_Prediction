@@ -9,7 +9,6 @@ class SimpleNet(nn.Module):
         self.fc2 = nn.Linear(hidden_size1, hidden_size2)
         self.fc3 = nn.Linear(hidden_size2, output_size)
         self.relu = nn.ReLU()
-        self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
@@ -17,4 +16,4 @@ class SimpleNet(nn.Module):
         x = self.relu(self.fc2(x))
         x = self.dropout(x)
         x = self.fc3(x)
-        return self.sigmoid(x)
+        return x
