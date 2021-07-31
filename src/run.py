@@ -4,7 +4,7 @@ from train import run_net
 
 def main(name, mode):
     sub = run_net(name, mode)
-    sub.to_csv('submission.csv', index=False)
+    sub.to_csv('../submissions/submission.csv', index=False)
 
     
 
