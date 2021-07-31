@@ -11,20 +11,20 @@ from preprocess import prepare_data
 from pytorch_tabnet.tab_model import TabNetRegressor
 from metrics import LogitsLogLoss
 from torch.utils.data import DataLoader
-from utils import seed_everything, sigmoid
+from utils import seed_everything
 from scipy.special import expit
 from sklearn.metrics import log_loss
 
 
 EPOCHS = 30
-TAB_EPOCHS = 100
+TAB_EPOCHS = 200
 BATCH_SIZE = 2048
 TAB_BATCH_SIZE = 1042
 LEARNING_RATE = 1e-3
 TAB_LEARNING_RATE = 2e-2
-WEIGHT_DECAY = 2e-5
+WEIGHT_DECAY = 1e-5
 SEED = 42
-NUM_FOLDS = 10
+NUM_FOLDS = 5
 
 
 def train_fun(model, optimizer, loss_fun, train_loader, device, epoch):
@@ -195,8 +195,7 @@ def run_msk_fold_cv(X_train, Y_train, Y_train_stub, X_test, ss, num_folds, model
             fold_Y_train = fold_Y_train.to_numpy()
             fold_X_val = fold_X_val.to_numpy()
             fold_Y_val = fold_Y_val.to_numpy()
-            X_test = X_test.to_numpy()
-            fold_loss, fold_Y_pred, fold_oof = train_tab_net(fold, X_test.drop('sig_id', axis=1), 
+            fold_loss, fold_Y_pred, fold_oof = train_tab_net(fold, X_test.drop('sig_id', axis=1).to_numpy(), 
                                                              fold_X_train, fold_Y_train,
                                                              fold_X_val, fold_Y_val,
                                                              X_train.shape[0], val_idx, 
