@@ -22,9 +22,9 @@ BATCH_SIZE = 2048
 TAB_BATCH_SIZE = 1042
 LEARNING_RATE = 1e-3
 TAB_LEARNING_RATE = 2e-2
-WEIGHT_DECAY = 1e-5
+WEIGHT_DECAY = 2e-5
 SEED = 42
-NUM_FOLDS = 5
+NUM_FOLDS = 10
 
 
 def train_fun(model, optimizer, loss_fun, train_loader, device, epoch):
@@ -125,7 +125,7 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
                         n_d=32,
                         n_a=32,
                         n_steps=1,
-                        gamma=1.3,
+                        gamma=1.7,
                         lambda_sparse=0,
                         optimizer_fn=torch.optim.Adam,
                         optimizer_params=dict(lr=TAB_LEARNING_RATE, weight_decay=WEIGHT_DECAY),
@@ -135,6 +135,7 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
                                                 factor=0.9,),
                         scheduler_fn = torch.optim.lr_scheduler.ReduceLROnPlateau,                    
                         mask_type='entmax',
+                        seed=SEED,
                         verbose=10
                     )
 
@@ -145,11 +146,11 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
         y_train=Y_train,
         eval_set = [(X_val, Y_val)],
         eval_name=['val'],
-        eval_metric=['logits_ll'],
+        eval_metric=[LogitsLogLoss],
         max_epochs=TAB_EPOCHS,
         patience=20,
         batch_size=TAB_BATCH_SIZE,
-        virtual_batch_size=64,
+        virtual_batch_size=128,
         num_workers=1,
         drop_last=False,
         loss_fn=nn.BCEWithLogitsLoss()
@@ -160,7 +161,7 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
     oof[val_idx] = expit(model.predict(X_val))
     Y_pred = expit(model.predict(X_test))
 
-    return model.best_cost, Y_pred, oof
+    return np.min(model.history['val_logits_ll']), Y_pred, oof
 
 
 def run_msk_fold_cv(X_train, Y_train, Y_train_stub, X_test, ss, num_folds, model_name, device):
@@ -200,11 +201,12 @@ def run_msk_fold_cv(X_train, Y_train, Y_train_stub, X_test, ss, num_folds, model
                                                              fold_X_val, fold_Y_val,
                                                              X_train.shape[0], val_idx, 
                                                              Y_train.shape[1] - 1)
-    Y_pred += fold_Y_pred
-    oof += fold_oof
-    running_loss += fold_loss
+        Y_pred += fold_Y_pred
+        oof += fold_oof
+        running_loss += fold_loss
 
     Y_pred /= num_folds
+    oof /= num_folds
     cv_loss = running_loss / num_folds
 
     oof_Y_pred = Y_train.copy()
