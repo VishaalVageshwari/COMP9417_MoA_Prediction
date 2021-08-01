@@ -55,3 +55,6 @@ Create a notebook for the competition and upload the relevant notebook from the 
 Note: The baseline neural network only requires the first data library.
 
 Safe that version and submit it to confirm kaggle scores.
+
+
+Results vary slightly between the two implementations (local vs kaggle) despite being identically seede (speculated to be because of os differences). The kaggle notebook metrics were taken for consistency.

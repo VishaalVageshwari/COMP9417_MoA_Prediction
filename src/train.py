@@ -16,15 +16,17 @@ from scipy.special import expit
 from sklearn.metrics import log_loss
 
 
-EPOCHS = 30
 TAB_EPOCHS = 200
-BATCH_SIZE = 2048
 TAB_BATCH_SIZE = 1042
-LEARNING_RATE = 1e-3
 TAB_LEARNING_RATE = 2e-2
 WEIGHT_DECAY = 1e-5
 SEED = 42
 NUM_FOLDS = 5
+BATCH_SIZE = 2048
+
+EPOCHS = 30
+BATCH_SIZE = 2048
+LEARNING_RATE = 1e-3
 
 
 def train_fun(model, optimizer, loss_fun, train_loader, device, epoch):
@@ -125,15 +127,15 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
                         n_d=32,
                         n_a=32,
                         n_steps=1,
-                        gamma=1.7,
+                        gamma=1.8,
                         lambda_sparse=0,
                         optimizer_fn=torch.optim.Adam,
                         optimizer_params=dict(lr=TAB_LEARNING_RATE, weight_decay=WEIGHT_DECAY),
                         scheduler_params=dict(mode='min',
-                                                patience=5,
-                                                min_lr=1e-5,
-                                                factor=0.9,),
-                        scheduler_fn = torch.optim.lr_scheduler.ReduceLROnPlateau,                    
+                                              patience=5,
+                                              min_lr=1e-5,
+                                              factor=0.9),
+                        scheduler_fn=torch.optim.lr_scheduler.ReduceLROnPlateau,
                         mask_type='entmax',
                         seed=SEED,
                         verbose=10
@@ -156,7 +158,7 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
         loss_fn=nn.BCEWithLogitsLoss()
     )
 
-    model.save_model(f'../fold_models/tabnet_fold_{fold + 1}.pth')
+    model.save_model(f'../fold_models/tabnet_fold_{fold + 1}')
 
     oof[val_idx] = expit(model.predict(X_val))
     Y_pred = expit(model.predict(X_test))
@@ -167,7 +169,7 @@ def train_tab_net(fold, X_test, X_train, Y_train, X_val, Y_val, train_size, val_
 def run_msk_fold_cv(X_train, Y_train, Y_train_stub, X_test, ss, num_folds, model_name, device):
     running_loss = 0
     Y_pred = np.zeros((X_test.shape[0], Y_train.shape[1] - 1))
-    mskf = MultilabelStratifiedKFold(n_splits=num_folds, shuffle=False, random_state=None)
+    mskf = MultilabelStratifiedKFold(n_splits=num_folds, shuffle=True, random_state=0)
     oof = np.zeros((X_train.shape[0], Y_train.shape[1] - 1))
 
     for fold, (trn_idx, val_idx) in enumerate(mskf.split(X_train, Y_train)):
