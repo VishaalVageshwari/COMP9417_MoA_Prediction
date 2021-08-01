@@ -46,6 +46,12 @@ This may take a while to complete depending on the hardware avaiable.
 
 ### Upload notebook
 
-Create a notebook for the competition and upload the relevant notebook from the notebooks directory (tabnet_current_best.ipynb is the main model). 
+Create a notebook for the competition and upload the relevant notebook from the notebooks directory (tabnet_current_best.ipynb is the main model). The competition requires that the notebook be run offline but there are certain non-standard libaries that are required. Add the following two libraries to the kaggle input:
+
+1. https://www.kaggle.com/yasufuminakama/iterative-stratification
+
+2. https://www.kaggle.com/ryati131457/pytorchtabnet
+
+Note: The baseline neural network only requires the first data library.
 
 Safe that version and submit it to confirm kaggle scores.
